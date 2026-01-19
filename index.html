@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Clubs formateurs de football – Wikidata</title>
+
+  <!-- Vega / Vega-Lite -->
+  <script src="https://cdn.jsdelivr.net/npm/vega@5"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vega-lite@5"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vega-embed@6"></script>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 40px;
+    }
+    h1, h2 {
+      text-align: center;
+    }
+    #chart {
+      max-width: 900px;
+      margin: auto;
+    }
+    img {
+      display: block;
+      margin: 40px auto;
+      max-width: 900px;
+      width: 100%;
+    }
+  </style>
+</head>
+
+<body>
+
+<h1>Clubs formateurs de football</h1>
+
+<p style="text-align:center;">
+Visualisation basée sur Wikidata : nombre de joueurs professionnels passés par chaque club.
+</p>
+
+<!-- Graphique Wikidata -->
+<div id="chart"></div>
+
+<script>
+const spec = {
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "data": {
+    "url": "https://query.wikidata.org/sparql?query=SELECT%20%3FclubLabel%20%3FcountryLabel%20(COUNT(DISTINCT%20%3Fplayer)%20AS%20%3FplayersCount)%20WHERE%20%7B%20%3Fplayer%20wdt%3AP106%20wd%3AQ937857%3B%20wdt%3AP54%20%3Fclub.%20%3Fclub%20wdt%3AP31%20wd%3AQ476028%3B%20wdt%3AP17%20%3Fcountry.%20SERVICE%20wikibase%3Alabel%20%7B%20bd%3AserviceParam%20wikibase%3Alanguage%20%22fr%22.%20%7D%20%7D%20GROUP%20BY%20%3FclubLabel%20%3FcountryLabel%20ORDER%20BY%20DESC(%3FplayersCount)%20LIMIT%2015",
+    "format": {
+      "type": "json",
+      "property": "results.bindings"
+    }
+  },
+  "transform": [
+    {
+      "calculate": "toNumber(datum.playersCount.value)",
+      "as": "players"
+    }
+  ],
+  "mark": "bar",
+  "encoding": {
+    "x": {
+      "field": "clubLabel.value",
+      "type": "nominal",
+      "sort": "-y",
+      "title": "Club"
+    },
+    "y": {
+      "field": "players",
+      "type": "quantitative",
+      "title": "Nombre de joueurs formés"
+    },
+    "color": {
+      "field": "countryLabel.value",
+      "type": "nominal",
+      "title": "Pays"
+    },
+    "tooltip": [
+      { "field": "clubLabel.value", "type": "nominal", "title": "Club" },
+      { "field": "countryLabel.value", "type": "nominal", "title": "Pays" },
+      { "field": "players", "type": "quantitative", "title": "Joueurs formés" }
+    ]
+  }
+};
+
+vegaEmbed("#chart", spec);
+</script>
+
+<!-- Graphique RAWGraphs -->
+<h2>Visualisation RAWGraphs</h2>
+
+<img src="rawgraphs.svg" alt="Graphique RAWGraphs">
+
+<p style="text-align:center;">
+Graphique réalisé avec RAWGraphs à partir de la même requête Wikidata.
+</p>
+
+</body>
+</html>
