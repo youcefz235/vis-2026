@@ -2,44 +2,134 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <title>Clubs formateurs de football – Wikidata</title>
+  <title>Clubs formateurs de football – Visualisation Wikidata</title>
 
   <!-- Vega / Vega-Lite -->
   <script src="https://cdn.jsdelivr.net/npm/vega@5"></script>
   <script src="https://cdn.jsdelivr.net/npm/vega-lite@5"></script>
   <script src="https://cdn.jsdelivr.net/npm/vega-embed@6"></script>
 
+  <!-- Google Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+
   <style>
+    * {
+      box-sizing: border-box;
+    }
+
     body {
-      font-family: Arial, sans-serif;
-      margin: 40px;
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+      color: #f5f5f5;
     }
-    h1, h2 {
+
+    header {
       text-align: center;
+      padding: 60px 20px;
+      background: rgba(0,0,0,0.4);
+      backdrop-filter: blur(6px);
     }
-    #chart {
-      max-width: 900px;
+
+    header h1 {
+      font-size: 2.8rem;
+      margin-bottom: 10px;
+      font-weight: 700;
+    }
+
+    header p {
+      font-size: 1.1rem;
+      color: #cfd8dc;
+      max-width: 700px;
       margin: auto;
     }
+
+    main {
+      max-width: 1100px;
+      margin: 40px auto;
+      padding: 0 20px;
+    }
+
+    section {
+      background: rgba(255,255,255,0.05);
+      border-radius: 16px;
+      padding: 30px;
+      margin-bottom: 40px;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+    }
+
+    section h2 {
+      text-align: center;
+      margin-bottom: 25px;
+      font-weight: 600;
+      color: #ffcc80;
+    }
+
+    #chart {
+      max-width: 1000px;
+      margin: auto;
+      background: #ffffff;
+      border-radius: 12px;
+      padding: 15px;
+    }
+
     img {
       display: block;
-      margin: 40px auto;
-      max-width: 900px;
-      width: 100%;
+      margin: 30px auto;
+      max-width: 100%;
+      border-radius: 12px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+      border: 3px solid rgba(255,255,255,0.2);
+    }
+
+    footer {
+      text-align: center;
+      padding: 20px;
+      font-size: 0.9rem;
+      color: #b0bec5;
+      background: rgba(0,0,0,0.4);
+    }
+
+    footer span {
+      color: #ffcc80;
+      font-weight: 600;
     }
   </style>
 </head>
 
 <body>
 
-<h1>Clubs formateurs de football</h1>
+<header>
+  <h1>Clubs formateurs de football</h1>
+  <p>
+    Visualisation interactive basée sur les données ouvertes de Wikidata,
+    représentant le nombre de joueurs professionnels passés par chaque club formateur.
+  </p>
+</header>
 
-<p style="text-align:center;">
-Visualisation basée sur Wikidata : nombre de joueurs professionnels passés par chaque club.
-</p>
+<main>
 
-<!-- Graphique Wikidata -->
-<div id="chart"></div>
+  <!-- Section Vega-Lite -->
+  <section>
+    <h2>📊 Visualisation interactive (Vega-Lite)</h2>
+    <div id="chart"></div>
+  </section>
+
+  <!-- Section RAWGraphs -->
+  <section>
+    <h2>🖼 Visualisation statique (RAWGraphs)</h2>
+    <img src="rawgraphs.svg" alt="Graphique RAWGraphs">
+    <p style="text-align:center; color:#cfd8dc;">
+      Graphique généré avec RAWGraphs à partir de la même requête Wikidata.
+    </p>
+  </section>
+
+</main>
+
+<footer>
+  Projet réalisé dans le cadre du module VIS 2026 –  
+  <span>Data Visualization & Wikidata</span>
+</footer>
 
 <script>
 const spec = {
@@ -57,13 +147,18 @@ const spec = {
       "as": "players"
     }
   ],
-  "mark": "bar",
+  "mark": {
+    "type": "bar",
+    "cornerRadiusTopLeft": 4,
+    "cornerRadiusTopRight": 4
+  },
   "encoding": {
     "x": {
       "field": "clubLabel.value",
       "type": "nominal",
       "sort": "-y",
-      "title": "Club"
+      "title": "Club",
+      "axis": { "labelAngle": -30 }
     },
     "y": {
       "field": "players",
@@ -83,17 +178,8 @@ const spec = {
   }
 };
 
-vegaEmbed("#chart", spec);
+vegaEmbed("#chart", spec, { actions: false });
 </script>
-
-<!-- Graphique RAWGraphs -->
-<h2>Visualisation RAWGraphs</h2>
-
-<img src="rawgraphs.svg" alt="Graphique RAWGraphs">
-
-<p style="text-align:center;">
-Graphique réalisé avec RAWGraphs à partir de la même requête Wikidata.
-</p>
 
 </body>
 </html>
