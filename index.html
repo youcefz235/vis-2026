@@ -7,7 +7,7 @@
     <script src="https://cdn.jsdelivr.net/npm/vega@5"></script>
     <script src="https://cdn.jsdelivr.net/npm/vega-lite@5"></script>
     <script src="https://cdn.jsdelivr.net/npm/vega-embed@6"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -99,38 +99,95 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            position: relative;
         }
 
         .full-width {
             grid-column: 1 / -1;
         }
 
+        /* WORD CLOUD STYLES */
         #wordCloudContainer {
             width: 100%;
             height: 500px;
             position: relative;
+            overflow: hidden;
+        }
+
+        .word {
+            position: absolute;
+            font-family: 'Inter', sans-serif;
+            font-weight: 800;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            user-select: none;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .word:hover {
+            transform: scale(1.15);
+            z-index: 10;
+            filter: brightness(1.2);
+        }
+
+        /* IMAGE GALLERY STYLES */
+        .clubs-gallery {
             display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
+            justify-content: space-around;
             align-items: center;
-            gap: 10px;
+            flex-wrap: wrap;
+            gap: 40px;
+            width: 100%;
             padding: 20px;
         }
 
-        .word-item {
-            display: inline-block;
-            font-family: 'Inter', sans-serif;
-            font-weight: 700;
+        .club-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            transition: transform 0.3s ease;
             cursor: pointer;
-            transition: all 0.3s ease;
-            padding: 5px 10px;
-            border-radius: 5px;
         }
 
-        .word-item:hover {
-            transform: scale(1.2);
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        .club-item:hover {
+            transform: translateY(-10px);
+        }
+
+        .club-logo-container {
+            width: 140px;
+            height: 140px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            border-radius: 50%;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .club-item:hover .club-logo-container {
+            box-shadow: 0 8px 24px rgba(59, 130, 246, 0.3);
+            transform: scale(1.05);
+        }
+
+        .club-logo {
+            width: 100px;
+            height: 100px;
+            object-fit: contain;
+        }
+
+        .club-name {
+            font-size: 16px;
+            font-weight: 700;
+            color: #1e293b;
+            text-align: center;
+        }
+
+        .club-info {
+            font-size: 13px;
+            color: #64748b;
+            text-align: center;
         }
 
         footer {
@@ -207,7 +264,11 @@
                     <span class="card-icon">🖼️</span>
                     <h2 class="card-title">Galerie des Clubs Prestigieux</h2>
                 </div>
-                <div class="viz-container" id="imageGallery"></div>
+                <div class="viz-container">
+                    <div class="clubs-gallery" id="clubsGallery">
+                        <!-- Les logos seront ajoutés dynamiquement ici -->
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -308,54 +369,46 @@
             }
         };
 
-        // ===== 2. WORD CLOUD (Simple et qui marche) =====
+        // ===== 2. BEAUTIFUL WORD CLOUD =====
         const words = [
-            {text: 'Football', size: 80, color: '#ef4444'},
-            {text: 'UEFA', size: 65, color: '#f59e0b'},
-            {text: 'Champions', size: 70, color: '#10b981'},
-            {text: 'Ballon d\'Or', size: 60, color: '#3b82f6'},
-            {text: 'Transfert', size: 55, color: '#8b5cf6'},
-            {text: 'Tactique', size: 52, color: '#ec4899'},
-            {text: 'Entraîneur', size: 50, color: '#14b8a6'},
-            {text: 'Formation', size: 48, color: '#f97316'},
-            {text: 'Attaque', size: 58, color: '#06b6d4'},
-            {text: 'Défense', size: 56, color: '#84cc16'},
-            {text: 'Milieu', size: 46, color: '#eab308'},
-            {text: 'Gardien', size: 45, color: '#6366f1'},
-            {text: 'Passe', size: 42, color: '#a855f7'},
-            {text: 'But', size: 75, color: '#d946ef'},
-            {text: 'Dribble', size: 40, color: '#22d3ee'},
-            {text: 'Corner', size: 38, color: '#fbbf24'},
-            {text: 'Penalty', size: 50, color: '#34d399'},
-            {text: 'Hors-jeu', size: 39, color: '#fb923c'},
-            {text: 'Carton', size: 41, color: '#38bdf8'},
-            {text: 'Arbitre', size: 43, color: '#c084fc'},
-            {text: 'Supporters', size: 49, color: '#4ade80'},
-            {text: 'Stade', size: 47, color: '#f43f5e'},
-            {text: 'Victoire', size: 62, color: '#0ea5e9'},
-            {text: 'Coupe', size: 53, color: '#a3e635'},
-            {text: 'Ligue', size: 51, color: '#fb7185'},
-            {text: 'Match', size: 54, color: '#2dd4bf'},
-            {text: 'Équipe', size: 48, color: '#fde047'},
-            {text: 'Compétition', size: 46, color: '#c026d3'},
-            {text: 'Trophée', size: 44, color: '#06b6d4'},
-            {text: 'Championnat', size: 57, color: '#f59e0b'}
+            {text: 'Football', size: 72, color: '#ef4444', x: 280, y: 120},
+            {text: 'UEFA', size: 58, color: '#f59e0b', x: 150, y: 250},
+            {text: 'Champions League', size: 48, color: '#10b981', x: 320, y: 320, rotate: true},
+            {text: 'Ballon d\'Or', size: 54, color: '#3b82f6', x: 180, y: 350},
+            {text: 'Transfert', size: 42, color: '#8b5cf6', x: 450, y: 200},
+            {text: 'Tactique', size: 50, color: '#ec4899', x: 100, y: 420},
+            {text: 'Formation', size: 36, color: '#14b8a6', x: 520, y: 380},
+            {text: 'Attaque', size: 46, color: '#f97316', x: 420, y: 100},
+            {text: 'Défense', size: 44, color: '#06b6d4', x: 230, y: 180},
+            {text: 'But', size: 64, color: '#d946ef', x: 480, y: 280},
+            {text: 'Penalty', size: 40, color: '#34d399', x: 90, y: 150},
+            {text: 'Arbitre', size: 38, color: '#c084fc', x: 350, y: 430},
+            {text: 'Supporters', size: 44, color: '#4ade80', x: 520, y: 150},
+            {text: 'Stade', size: 48, color: '#f43f5e', x: 140, y: 80},
+            {text: 'Victoire', size: 56, color: '#0ea5e9', x: 380, y: 50},
+            {text: 'Coupe', size: 42, color: '#a3e635', x: 280, y: 240},
+            {text: 'Match', size: 40, color: '#2dd4bf', x: 160, y: 310},
+            {text: 'Équipe', size: 38, color: '#fde047', x: 480, y: 420},
+            {text: 'Championnat', size: 46, color: '#f59e0b', x: 60, y: 320, rotate: true},
+            {text: 'Trophée', size: 36, color: '#06b6d4', x: 420, y: 360}
         ];
 
         const container = document.getElementById('wordCloudContainer');
         words.forEach(word => {
-            const span = document.createElement('span');
-            span.className = 'word-item';
+            const span = document.createElement('div');
+            span.className = 'word';
             span.textContent = word.text;
             span.style.fontSize = word.size + 'px';
             span.style.color = word.color;
-            span.title = `${word.text} (taille: ${word.size})`;
+            span.style.left = word.x + 'px';
+            span.style.top = word.y + 'px';
             
-            // Rotation aléatoire pour certains mots
-            if (Math.random() > 0.7) {
-                span.style.transform = `rotate(${Math.random() > 0.5 ? '90deg' : '-90deg'})`;
+            if (word.rotate) {
+                span.style.transform = 'rotate(-90deg)';
+                span.style.transformOrigin = 'center';
             }
             
+            span.title = `${word.text} (importance: ${word.size})`;
             container.appendChild(span);
         });
 
@@ -445,107 +498,114 @@
             ]
         };
 
-        // ===== 4. IMAGE GALLERY =====
-        const imageSpec = {
-            "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
-            "width": 1400,
-            "height": 300,
-            "data": {
-                "values": [
-                    {
-                        "club": "Ajax Amsterdam",
-                        "logo": "https://upload.wikimedia.org/wikipedia/en/7/79/Ajax_Amsterdam.svg",
-                        "pays": "Pays-Bas",
-                        "fondation": 1900,
-                        "x": 200
-                    },
-                    {
-                        "club": "SL Benfica",
-                        "logo": "https://upload.wikimedia.org/wikipedia/en/a/a2/SL_Benfica_logo.svg",
-                        "pays": "Portugal",
-                        "fondation": 1904,
-                        "x": 400
-                    },
-                    {
-                        "club": "FC Barcelona",
-                        "logo": "https://upload.wikimedia.org/wikipedia/fr/thumb/a/a1/FC_Barcelona_logo.svg/200px-FC_Barcelona_logo.svg.png",
-                        "pays": "Espagne",
-                        "fondation": 1899,
-                        "x": 600
-                    },
-                    {
-                        "club": "Real Madrid",
-                        "logo": "https://upload.wikimedia.org/wikipedia/fr/thumb/c/c7/Logo_Real_Madrid.svg/200px-Logo_Real_Madrid.svg.png",
-                        "pays": "Espagne",
-                        "fondation": 1902,
-                        "x": 800
-                    },
-                    {
-                        "club": "Bayern Munich",
-                        "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1b/FC_Bayern_M%C3%BCnchen_logo_%282017%29.svg/200px-FC_Bayern_M%C3%BCnchen_logo_%282017%29.svg.png",
-                        "pays": "Allemagne",
-                        "fondation": 1900,
-                        "x": 1000
-                    },
-                    {
-                        "club": "Juventus",
-                        "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/15/Juventus_FC_2017_logo.svg/200px-Juventus_FC_2017_logo.svg.png",
-                        "pays": "Italie",
-                        "fondation": 1897,
-                        "x": 1200
-                    }
-                ]
+        // ===== 4. CLUBS GALLERY WITH SVG LOGOS =====
+        const clubs = [
+            {
+                name: 'Ajax Amsterdam',
+                country: 'Pays-Bas',
+                year: 1900,
+                colors: ['#D2122E', '#FFFFFF'],
+                initials: 'AFC'
             },
-            "layer": [
-                {
-                    "mark": {
-                        "type": "image",
-                        "width": 120,
-                        "height": 120
-                    },
-                    "encoding": {
-                        "x": {
-                            "field": "x",
-                            "type": "quantitative",
-                            "axis": null,
-                            "scale": {"domain": [0, 1400]}
-                        },
-                        "y": {"value": 100},
-                        "url": {"field": "logo", "type": "nominal"},
-                        "tooltip": [
-                            {"field": "club", "type": "nominal", "title": "Club"},
-                            {"field": "pays", "type": "nominal", "title": "Pays"},
-                            {"field": "fondation", "type": "quantitative", "title": "Fondation"}
-                        ]
-                    }
-                },
-                {
-                    "mark": {
-                        "type": "text",
-                        "fontSize": 14,
-                        "fontWeight": "bold",
-                        "dy": 80
-                    },
-                    "encoding": {
-                        "x": {
-                            "field": "x",
-                            "type": "quantitative",
-                            "axis": null
-                        },
-                        "y": {"value": 100},
-                        "text": {"field": "club", "type": "nominal"},
-                        "color": {"value": "#1e293b"}
-                    }
-                }
-            ]
-        };
+            {
+                name: 'SL Benfica',
+                country: 'Portugal',
+                year: 1904,
+                colors: ['#E30613', '#FFFFFF'],
+                initials: 'SLB'
+            },
+            {
+                name: 'FC Barcelona',
+                country: 'Espagne',
+                year: 1899,
+                colors: ['#A50044', '#004D98'],
+                initials: 'FCB'
+            },
+            {
+                name: 'Real Madrid',
+                country: 'Espagne',
+                year: 1902,
+                colors: ['#FEBE10', '#FFFFFF'],
+                initials: 'RMC'
+            },
+            {
+                name: 'Bayern Munich',
+                country: 'Allemagne',
+                year: 1900,
+                colors: ['#DC052D', '#0066B2'],
+                initials: 'FCB'
+            },
+            {
+                name: 'Juventus FC',
+                country: 'Italie',
+                year: 1897,
+                colors: ['#000000', '#FFFFFF'],
+                initials: 'JUV'
+            }
+        ];
 
-        // Embed toutes les visualisations
+        const gallery = document.getElementById('clubsGallery');
+        
+        clubs.forEach((club, index) => {
+            const clubDiv = document.createElement('div');
+            clubDiv.className = 'club-item';
+            
+            const logoContainer = document.createElement('div');
+            logoContainer.className = 'club-logo-container';
+            logoContainer.style.background = `linear-gradient(135deg, ${club.colors[0]} 0%, ${club.colors[1]} 100%)`;
+            
+            const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+            svg.setAttribute('class', 'club-logo');
+            svg.setAttribute('viewBox', '0 0 100 100');
+            
+            // Cercle de fond
+            const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+            circle.setAttribute('cx', '50');
+            circle.setAttribute('cy', '50');
+            circle.setAttribute('r', '45');
+            circle.setAttribute('fill', 'white');
+            circle.setAttribute('opacity', '0.9');
+            svg.appendChild(circle);
+            
+            // Texte avec initiales
+            const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+            text.setAttribute('x', '50');
+            text.setAttribute('y', '60');
+            text.setAttribute('text-anchor', 'middle');
+            text.setAttribute('font-size', '24');
+            text.setAttribute('font-weight', 'bold');
+            text.setAttribute('fill', club.colors[0]);
+            text.textContent = club.initials;
+            svg.appendChild(text);
+            
+            // Étoile au-dessus
+            const star = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
+            star.setAttribute('points', '50,15 53,25 63,25 55,31 58,41 50,35 42,41 45,31 37,25 47,25');
+            star.setAttribute('fill', club.colors[1] === '#FFFFFF' ? club.colors[0] : club.colors[1]);
+            svg.appendChild(star);
+            
+            logoContainer.appendChild(svg);
+            
+            const nameDiv = document.createElement('div');
+            nameDiv.className = 'club-name';
+            nameDiv.textContent = club.name;
+            
+            const infoDiv = document.createElement('div');
+            infoDiv.className = 'club-info';
+            infoDiv.textContent = `${club.country} • ${club.year}`;
+            
+            clubDiv.appendChild(logoContainer);
+            clubDiv.appendChild(nameDiv);
+            clubDiv.appendChild(infoDiv);
+            
+            gallery.appendChild(clubDiv);
+        });
+
+        // Embed les visualisations Vega-Lite
         vegaEmbed('#rawgraphsChart', rawgraphsSpec, embedOptions);
         vegaEmbed('#lexicalChart', lexicalSpec, embedOptions);
-        vegaEmbed('#imageGallery', imageSpec, embedOptions);
 
-        console.log("✅ Toutes les visualisations sont chargées!");
+        console.log("✅ Dashboard complet avec logos SVG générés !");
     </script>
 </body>
 </html>
