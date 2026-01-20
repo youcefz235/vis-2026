@@ -9,162 +9,543 @@
     <script src="https://cdn.jsdelivr.net/npm/vega-embed@6"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
     <style>
-        * {margin:0;padding:0;box-sizing:border-box;}
-        body {font-family:'Inter',sans-serif;background:linear-gradient(135deg,#0f172a 0%,#1e293b 100%);color:#fff;min-height:100vh;padding:20px;}
-        .container {max-width:1600px;margin:0 auto;}
-        header{text-align:center;padding:40px 20px 60px;margin-bottom:40px;}
-        h1{font-size:3.5rem;font-weight:700;background:linear-gradient(135deg,#60a5fa 0%,#a78bfa 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:15px;letter-spacing:-1px;}
-        .subtitle{font-size:1.2rem;color:#94a3b8;font-weight:300;}
-        .dashboard-grid{display:grid;grid-template-columns:1fr 1fr;gap:30px;margin-bottom:30px;}
-        .card{background:rgba(255,255,255,0.05);backdrop-filter:blur(10px);border-radius:20px;border:1px solid rgba(255,255,255,0.1);padding:35px;transition:all 0.3s ease;box-shadow:0 8px 32px rgba(0,0,0,0.2);}
-        .card:hover{transform:translateY(-5px);box-shadow:0 12px 48px rgba(96,165,250,0.15);border-color:rgba(96,165,250,0.3);}
-        .card-header{display:flex;align-items:center;gap:12px;margin-bottom:25px;}
-        .card-icon{font-size:1.8rem;}
-        .card-title{font-size:1.5rem;font-weight:600;color:#fbbf24;}
-        .viz-container{background:white;border-radius:12px;padding:25px;min-height:550px;display:flex;justify-content:center;align-items:center;position:relative;}
-        .full-width{grid-column:1 / -1;}
-        #wordCloudContainer{width:100%;height:500px;display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:12px;padding:20px;background:linear-gradient(135deg,#1e293b,#0f172a);border-radius:12px;}
-        .word-item{display:inline-block;font-family:'Inter',sans-serif;font-weight:700;cursor:pointer;transition:all 0.3s ease;padding:5px 12px;border-radius:5px;}
-        .word-item:hover{transform:scale(1.25);text-shadow:2px 2px 6px rgba(0,0,0,0.5);}
-        footer{text-align:center;padding:50px 20px;color:#64748b;font-size:0.95rem;border-top:1px solid rgba(255,255,255,0.1);margin-top:40px;}
-        @media(max-width:1200px){.dashboard-grid{grid-template-columns:1fr;}}
-        @media(max-width:768px){h1{font-size:2rem;}.card{padding:20px;}.viz-container{padding:15px;min-height:400px;}}
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: #fff;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            padding: 40px 20px 60px;
+            margin-bottom: 40px;
+        }
+
+        h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #60a5fa 0%, #a78bfa 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 15px;
+            letter-spacing: -1px;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: #94a3b8;
+            font-weight: 300;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 35px;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 48px rgba(96, 165, 250, 0.15);
+            border-color: rgba(96, 165, 250, 0.3);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+
+        .card-icon {
+            font-size: 1.8rem;
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #fbbf24;
+        }
+
+        .viz-container {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            min-height: 550px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        .full-width {
+            grid-column: 1 / -1;
+        }
+
+        #wordCloudContainer {
+            width: 100%;
+            height: 500px;
+            position: relative;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            padding: 20px;
+        }
+
+        .word-item {
+            display: inline-block;
+            font-family: 'Inter', sans-serif;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            padding: 5px 10px;
+            border-radius: 5px;
+        }
+
+        .word-item:hover {
+            transform: scale(1.2);
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        footer {
+            text-align: center;
+            padding: 50px 20px;
+            color: #64748b;
+            font-size: 0.95rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            margin-top: 40px;
+        }
+
+        @media (max-width: 1200px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .card {
+                padding: 20px;
+            }
+
+            .viz-container {
+                padding: 15px;
+                min-height: 400px;
+            }
+        }
     </style>
 </head>
 <body>
-<div class="container">
-    <header>
-        <h1>⚽ Football Analytics Dashboard</h1>
-        <p class="subtitle">Visualisation Interactive des Données Footballistiques - VIS 2026</p>
-    </header>
+    <div class="container">
+        <header>
+            <h1>⚽ Football Analytics Dashboard</h1>
+            <p class="subtitle">Visualisation Interactive des Données Footballistiques - VIS 2026</p>
+        </header>
 
-    <div class="dashboard-grid">
-        <!-- RAWGraphs Bar Chart -->
-        <div class="card full-width">
-            <div class="card-header">
-                <span class="card-icon">📊</span>
-                <h2 class="card-title">Distribution des Joueurs par Club (Style RAWGraphs)</h2>
+        <div class="dashboard-grid">
+            <!-- Card 1: RAWGraphs Style Bar Chart -->
+            <div class="card full-width">
+                <div class="card-header">
+                    <span class="card-icon">📊</span>
+                    <h2 class="card-title">Distribution des Joueurs par Club (Style RAWGraphs)</h2>
+                </div>
+                <div class="viz-container" id="rawgraphsChart"></div>
             </div>
-            <div class="viz-container" id="rawgraphsChart"></div>
+
+            <!-- Card 2: Word Cloud -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-icon">☁️</span>
+                    <h2 class="card-title">Nuage de Mots - Univers Football</h2>
+                </div>
+                <div class="viz-container">
+                    <div id="wordCloudContainer"></div>
+                </div>
+            </div>
+
+            <!-- Card 3: Lexical Analysis -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-icon">📈</span>
+                    <h2 class="card-title">Analyse Lexicale Avancée</h2>
+                </div>
+                <div class="viz-container" id="lexicalChart"></div>
+            </div>
+
+            <!-- Card 4: Image Gallery -->
+            <div class="card full-width">
+                <div class="card-header">
+                    <span class="card-icon">🖼️</span>
+                    <h2 class="card-title">Galerie des Clubs Prestigieux</h2>
+                </div>
+                <div class="viz-container" id="imageGallery"></div>
+            </div>
         </div>
 
-        <!-- Word Cloud -->
-        <div class="card">
-            <div class="card-header">
-                <span class="card-icon">☁️</span>
-                <h2 class="card-title">Nuage de Mots - Univers Football</h2>
-            </div>
-            <div class="viz-container">
-                <div id="wordCloudContainer"></div>
-            </div>
-        </div>
-
-        <!-- Lexical Analysis -->
-        <div class="card">
-            <div class="card-header">
-                <span class="card-icon">📈</span>
-                <h2 class="card-title">Analyse Lexicale Avancée</h2>
-            </div>
-            <div class="viz-container" id="lexicalChart"></div>
-        </div>
-
-        <!-- Image Gallery -->
-        <div class="card full-width">
-            <div class="card-header">
-                <span class="card-icon">🖼️</span>
-                <h2 class="card-title">Galerie des Clubs Prestigieux</h2>
-            </div>
-            <div class="viz-container" id="imageGallery"></div>
-        </div>
+        <footer>
+            <p>⚽ Football Analytics Dashboard © 2026 | Visualisation de données avec Vega-Lite</p>
+            <p style="margin-top: 10px; font-size: 0.85rem;">Données provenant de sources multiples (Wikidata, RAWGraphs, Analyse Textuelle)</p>
+        </footer>
     </div>
 
-    <footer>
-        <p>⚽ Football Analytics Dashboard © 2026 | Visualisation de données avec Vega-Lite</p>
-        <p style="margin-top:10px;font-size:0.85rem;">Données provenant de sources multiples (Wikidata, RAWGraphs, Analyse Textuelle)</p>
-    </footer>
-</div>
+    <script>
+        const embedOptions = {
+            actions: { export: true, source: false, compiled: false, editor: false },
+            theme: 'latimes'
+        };
 
-<script>
-const embedOptions = {actions:{export:true,source:false,compiled:false,editor:false},theme:'latimes'};
+        // ===== 1. RAWGRAPHS STYLE BAR CHART =====
+        const rawgraphsSpec = {
+            "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+            "width": 1400,
+            "height": 450,
+            "data": {
+                "values": [
+                    {"club": "AC Milan", "joueurs": 1200, "categorie": "Elite"},
+                    {"club": "Ajax", "joueurs": 2100, "categorie": "Elite"},
+                    {"club": "Arsenal", "joueurs": 1100, "categorie": "Top"},
+                    {"club": "Atlético Madrid", "joueurs": 1050, "categorie": "Top"},
+                    {"club": "Barcelona", "joueurs": 1350, "categorie": "Elite"},
+                    {"club": "Bayern Munich", "joueurs": 1150, "categorie": "Elite"},
+                    {"club": "Benfica", "joueurs": 1300, "categorie": "Elite"},
+                    {"club": "Borussia Dortmund", "joueurs": 1200, "categorie": "Top"},
+                    {"club": "Chelsea", "joueurs": 1100, "categorie": "Top"},
+                    {"club": "Inter Milan", "joueurs": 1050, "categorie": "Top"},
+                    {"club": "Juventus", "joueurs": 1400, "categorie": "Elite"},
+                    {"club": "Liverpool", "joueurs": 1250, "categorie": "Elite"},
+                    {"club": "Manchester City", "joueurs": 1050, "categorie": "Top"},
+                    {"club": "Manchester United", "joueurs": 1100, "categorie": "Top"},
+                    {"club": "Paris SG", "joueurs": 1000, "categorie": "Special"},
+                    {"club": "Real Madrid", "joueurs": 2050, "categorie": "Elite"},
+                    {"club": "Roma", "joueurs": 1050, "categorie": "Top"},
+                    {"club": "Sevilla", "joueurs": 1200, "categorie": "Elite"},
+                    {"club": "Sporting", "joueurs": 1300, "categorie": "Elite"},
+                    {"club": "Tottenham", "joueurs": 1050, "categorie": "Top"},
+                    {"club": "Valencia", "joueurs": 1250, "categorie": "Elite"},
+                    {"club": "Napoli", "joueurs": 1100, "categorie": "Top"},
+                    {"club": "Porto", "joueurs": 1300, "categorie": "Elite"},
+                    {"club": "Lyon", "joueurs": 1150, "categorie": "Elite"},
+                    {"club": "Marseille", "joueurs": 1050, "categorie": "Top"},
+                    {"club": "Monaco", "joueurs": 1000, "categorie": "Top"},
+                    {"club": "PSV", "joueurs": 1100, "categorie": "Top"},
+                    {"club": "Feyenoord", "joueurs": 1050, "categorie": "Top"},
+                    {"club": "Celtic", "joueurs": 1000, "categorie": "Top"},
+                    {"club": "Rangers", "joueurs": 1050, "categorie": "Top"}
+                ]
+            },
+            "mark": {
+                "type": "bar",
+                "cornerRadiusEnd": 3,
+                "width": {"band": 0.7}
+            },
+            "encoding": {
+                "x": {
+                    "field": "club",
+                    "type": "nominal",
+                    "sort": null,
+                    "axis": {
+                        "labelAngle": -45,
+                        "labelFontSize": 10,
+                        "title": null
+                    }
+                },
+                "y": {
+                    "field": "joueurs",
+                    "type": "quantitative",
+                    "title": "Nombre de joueurs",
+                    "axis": {
+                        "grid": true,
+                        "gridOpacity": 0.3
+                    },
+                    "scale": {"domain": [0, 2500]}
+                },
+                "color": {
+                    "field": "categorie",
+                    "type": "nominal",
+                    "scale": {
+                        "domain": ["Elite", "Top", "Special"],
+                        "range": ["#ff8c42", "#4ade80", "#3b82f6"]
+                    },
+                    "legend": {
+                        "title": "Catégorie",
+                        "orient": "top-right"
+                    }
+                },
+                "tooltip": [
+                    {"field": "club", "type": "nominal", "title": "Club"},
+                    {"field": "joueurs", "type": "quantitative", "title": "Joueurs"},
+                    {"field": "categorie", "type": "nominal", "title": "Catégorie"}
+                ]
+            }
+        };
 
-// ===== RAWGRAPHS Bar Chart =====
-const rawgraphsSpec = { /* Gardé tel quel, comme fourni */ };
-// ===== Word Cloud Amélioré =====
-const words = [
-    {text:'Football',size:80,color:'#ef4444'},
-    {text:'UEFA',size:65,color:'#f59e0b'},
-    {text:'Champions',size:70,color:'#10b981'},
-    {text:'Ballon d\'Or',size:60,color:'#3b82f6'},
-    {text:'Transfert',size:55,color:'#8b5cf6'},
-    {text:'Tactique',size:52,color:'#ec4899'},
-    {text:'Entraîneur',size:50,color:'#14b8a6'},
-    {text:'Formation',size:48,color:'#f97316'},
-    {text:'Attaque',size:58,color:'#06b6d4'},
-    {text:'Défense',size:56,color:'#84cc16'},
-    {text:'Milieu',size:46,color:'#eab308'},
-    {text:'Gardien',size:45,color:'#6366f1'},
-    {text:'Passe',size:42,color:'#a855f7'},
-    {text:'But',size:75,color:'#d946ef'},
-    {text:'Dribble',size:40,color:'#22d3ee'},
-    {text:'Corner',size:38,color:'#fbbf24'},
-    {text:'Penalty',size:50,color:'#34d399'},
-    {text:'Hors-jeu',size:39,color:'#fb923c'},
-    {text:'Carton',size:41,color:'#38bdf8'},
-    {text:'Arbitre',size:43,color:'#c084fc'},
-    {text:'Supporters',size:49,color:'#4ade80'},
-    {text:'Stade',size:47,color:'#f43f5e'},
-    {text:'Victoire',size:62,color:'#0ea5e9'},
-    {text:'Coupe',size:53,color:'#a3e635'},
-    {text:'Ligue',size:51,color:'#fb7185'},
-    {text:'Match',size:54,color:'#2dd4bf'},
-    {text:'Équipe',size:48,color:'#fde047'},
-    {text:'Compétition',size:46,color:'#c026d3'},
-    {text:'Trophée',size:44,color:'#06b6d4'},
-    {text:'Championnat',size:57,color:'#f59e0b'}
-];
-const container = document.getElementById('wordCloudContainer');
-words.forEach(word => {
-    const span = document.createElement('span');
-    span.className='word-item';
-    span.textContent=word.text;
-    span.style.fontSize=word.size+'px';
-    span.style.color=word.color;
-    span.title=`${word.text} (taille: ${word.size})`;
-    // légère rotation aléatoire
-    const angle = (Math.random()-0.5)*30;
-    span.style.transform=`rotate(${angle}deg)`;
-    container.appendChild(span);
-});
+        // ===== 2. WORD CLOUD (Simple et qui marche) =====
+        const words = [
+            {text: 'Football', size: 80, color: '#ef4444'},
+            {text: 'UEFA', size: 65, color: '#f59e0b'},
+            {text: 'Champions', size: 70, color: '#10b981'},
+            {text: 'Ballon d\'Or', size: 60, color: '#3b82f6'},
+            {text: 'Transfert', size: 55, color: '#8b5cf6'},
+            {text: 'Tactique', size: 52, color: '#ec4899'},
+            {text: 'Entraîneur', size: 50, color: '#14b8a6'},
+            {text: 'Formation', size: 48, color: '#f97316'},
+            {text: 'Attaque', size: 58, color: '#06b6d4'},
+            {text: 'Défense', size: 56, color: '#84cc16'},
+            {text: 'Milieu', size: 46, color: '#eab308'},
+            {text: 'Gardien', size: 45, color: '#6366f1'},
+            {text: 'Passe', size: 42, color: '#a855f7'},
+            {text: 'But', size: 75, color: '#d946ef'},
+            {text: 'Dribble', size: 40, color: '#22d3ee'},
+            {text: 'Corner', size: 38, color: '#fbbf24'},
+            {text: 'Penalty', size: 50, color: '#34d399'},
+            {text: 'Hors-jeu', size: 39, color: '#fb923c'},
+            {text: 'Carton', size: 41, color: '#38bdf8'},
+            {text: 'Arbitre', size: 43, color: '#c084fc'},
+            {text: 'Supporters', size: 49, color: '#4ade80'},
+            {text: 'Stade', size: 47, color: '#f43f5e'},
+            {text: 'Victoire', size: 62, color: '#0ea5e9'},
+            {text: 'Coupe', size: 53, color: '#a3e635'},
+            {text: 'Ligue', size: 51, color: '#fb7185'},
+            {text: 'Match', size: 54, color: '#2dd4bf'},
+            {text: 'Équipe', size: 48, color: '#fde047'},
+            {text: 'Compétition', size: 46, color: '#c026d3'},
+            {text: 'Trophée', size: 44, color: '#06b6d4'},
+            {text: 'Championnat', size: 57, color: '#f59e0b'}
+        ];
 
-// ===== Lexical Analysis =====
-const lexicalSpec = { /* Gardé tel quel */ };
+        const container = document.getElementById('wordCloudContainer');
+        words.forEach(word => {
+            const span = document.createElement('span');
+            span.className = 'word-item';
+            span.textContent = word.text;
+            span.style.fontSize = word.size + 'px';
+            span.style.color = word.color;
+            span.title = `${word.text} (taille: ${word.size})`;
+            
+            // Rotation aléatoire pour certains mots
+            if (Math.random() > 0.7) {
+                span.style.transform = `rotate(${Math.random() > 0.5 ? '90deg' : '-90deg'})`;
+            }
+            
+            container.appendChild(span);
+        });
 
-// ===== Image Gallery Améliorée =====
-const imageSpec = {
-    "$schema":"https://vega.github.io/schema/vega-lite/v5.json",
-    "width":1400,"height":300,
-    "data":{"values":[
-        {"club":"Ajax Amsterdam","logo":"https://upload.wikimedia.org/wikipedia/en/7/79/Ajax_Amsterdam.svg","pays":"Pays-Bas","fondation":1900,"x":150},
-        {"club":"SL Benfica","logo":"https://upload.wikimedia.org/wikipedia/en/a/a2/SL_Benfica_logo.svg","pays":"Portugal","fondation":1904,"x":400},
-        {"club":"FC Barcelona","logo":"https://upload.wikimedia.org/wikipedia/fr/thumb/a/a1/FC_Barcelona_logo.svg/200px-FC_Barcelona_logo.svg.png","pays":"Espagne","fondation":1899,"x":650},
-        {"club":"Real Madrid","logo":"https://upload.wikimedia.org/wikipedia/fr/thumb/c/c7/Logo_Real_Madrid.svg/200px-Logo_Real_Madrid.svg.png","pays":"Espagne","fondation":1902,"x":900},
-        {"club":"Bayern Munich","logo":"https://upload.wikimedia.org/wikipedia/commons/thumb/1/1b/FC_Bayern_M%C3%BCnchen_logo_%282017%29.svg/200px-FC_Bayern_M%C3%BCnchen_logo_%282017%29.svg.png","pays":"Allemagne","fondation":1900,"x":1150},
-        {"club":"Juventus","logo":"https://upload.wikimedia.org/wikipedia/commons/thumb/1/15/Juventus_FC_2017_logo.svg/200px-Juventus_FC_2017_logo.svg.png","pays":"Italie","fondation":1897,"x":1350}
-    ]},
-    "layer":[
-        {"mark":{"type":"image","width":120,"height":120},
-         "encoding":{"x":{"field":"x","type":"quantitative","axis":null},"y":{"value":150},"url":{"field":"logo","type":"nominal"},"tooltip":[{"field":"club","type":"nominal"},{"field":"pays","type":"nominal"},{"field":"fondation","type":"quantitative"}]}},
-        {"mark":{"type":"text","fontSize":14,"fontWeight":"bold","dy":90},
-         "encoding":{"x":{"field":"x","type":"quantitative"},"y":{"value":150},"text":{"field":"club"},"color":{"value":"#1e293b"}}}
-    ]
-};
+        // ===== 3. LEXICAL ANALYSIS =====
+        const lexicalSpec = {
+            "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+            "width": 600,
+            "height": 500,
+            "data": {
+                "values": [
+                    {"categorie": "Tactique & Stratégie", "frequence": 1245, "pourcentage": 18.5},
+                    {"categorie": "Joueurs & Postes", "frequence": 1580, "pourcentage": 23.5},
+                    {"categorie": "Compétitions", "frequence": 980, "pourcentage": 14.6},
+                    {"categorie": "Actions de jeu", "frequence": 1120, "pourcentage": 16.7},
+                    {"categorie": "Résultats & Scores", "frequence": 750, "pourcentage": 11.2},
+                    {"categorie": "Infrastructure", "frequence": 620, "pourcentage": 9.2},
+                    {"categorie": "Organisation", "frequence": 425, "pourcentage": 6.3}
+                ]
+            },
+            "layer": [
+                {
+                    "mark": {
+                        "type": "arc",
+                        "innerRadius": 100,
+                        "stroke": "#fff",
+                        "strokeWidth": 3,
+                        "padAngle": 0.03,
+                        "cornerRadius": 5
+                    },
+                    "encoding": {
+                        "theta": {
+                            "field": "frequence",
+                            "type": "quantitative",
+                            "stack": true
+                        },
+                        "color": {
+                            "field": "categorie",
+                            "type": "nominal",
+                            "scale": {
+                                "domain": [
+                                    "Tactique & Stratégie",
+                                    "Joueurs & Postes",
+                                    "Compétitions",
+                                    "Actions de jeu",
+                                    "Résultats & Scores",
+                                    "Infrastructure",
+                                    "Organisation"
+                                ],
+                                "range": ["#3b82f6", "#10b981", "#f59e0b", "#ef4444", "#8b5cf6", "#ec4899", "#14b8a6"]
+                            },
+                            "legend": {
+                                "title": "Catégories Lexicales",
+                                "orient": "bottom",
+                                "titleFontSize": 14,
+                                "labelFontSize": 12,
+                                "titleFontWeight": "bold"
+                            }
+                        },
+                        "tooltip": [
+                            {"field": "categorie", "type": "nominal", "title": "Catégorie"},
+                            {"field": "frequence", "type": "quantitative", "title": "Fréquence", "format": ","},
+                            {"field": "pourcentage", "type": "quantitative", "title": "Pourcentage", "format": ".1f"}
+                        ]
+                    }
+                },
+                {
+                    "mark": {
+                        "type": "text",
+                        "radius": 160,
+                        "fontSize": 15,
+                        "fontWeight": "bold",
+                        "fill": "#1e293b"
+                    },
+                    "encoding": {
+                        "text": {
+                            "field": "pourcentage",
+                            "type": "quantitative",
+                            "format": ".1f"
+                        },
+                        "theta": {
+                            "field": "frequence",
+                            "type": "quantitative",
+                            "stack": true
+                        }
+                    }
+                }
+            ]
+        };
 
-// Embed toutes les visualisations
-vegaEmbed('#rawgraphsChart', rawgraphsSpec, embedOptions);
-vegaEmbed('#lexicalChart', lexicalSpec, embedOptions);
-vegaEmbed('#imageGallery', imageSpec, embedOptions);
+        // ===== 4. IMAGE GALLERY =====
+        const imageSpec = {
+            "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+            "width": 1400,
+            "height": 300,
+            "data": {
+                "values": [
+                    {
+                        "club": "Ajax Amsterdam",
+                        "logo": "https://upload.wikimedia.org/wikipedia/en/7/79/Ajax_Amsterdam.svg",
+                        "pays": "Pays-Bas",
+                        "fondation": 1900,
+                        "x": 200
+                    },
+                    {
+                        "club": "SL Benfica",
+                        "logo": "https://upload.wikimedia.org/wikipedia/en/a/a2/SL_Benfica_logo.svg",
+                        "pays": "Portugal",
+                        "fondation": 1904,
+                        "x": 400
+                    },
+                    {
+                        "club": "FC Barcelona",
+                        "logo": "https://upload.wikimedia.org/wikipedia/fr/thumb/a/a1/FC_Barcelona_logo.svg/200px-FC_Barcelona_logo.svg.png",
+                        "pays": "Espagne",
+                        "fondation": 1899,
+                        "x": 600
+                    },
+                    {
+                        "club": "Real Madrid",
+                        "logo": "https://upload.wikimedia.org/wikipedia/fr/thumb/c/c7/Logo_Real_Madrid.svg/200px-Logo_Real_Madrid.svg.png",
+                        "pays": "Espagne",
+                        "fondation": 1902,
+                        "x": 800
+                    },
+                    {
+                        "club": "Bayern Munich",
+                        "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1b/FC_Bayern_M%C3%BCnchen_logo_%282017%29.svg/200px-FC_Bayern_M%C3%BCnchen_logo_%282017%29.svg.png",
+                        "pays": "Allemagne",
+                        "fondation": 1900,
+                        "x": 1000
+                    },
+                    {
+                        "club": "Juventus",
+                        "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/15/Juventus_FC_2017_logo.svg/200px-Juventus_FC_2017_logo.svg.png",
+                        "pays": "Italie",
+                        "fondation": 1897,
+                        "x": 1200
+                    }
+                ]
+            },
+            "layer": [
+                {
+                    "mark": {
+                        "type": "image",
+                        "width": 120,
+                        "height": 120
+                    },
+                    "encoding": {
+                        "x": {
+                            "field": "x",
+                            "type": "quantitative",
+                            "axis": null,
+                            "scale": {"domain": [0, 1400]}
+                        },
+                        "y": {"value": 100},
+                        "url": {"field": "logo", "type": "nominal"},
+                        "tooltip": [
+                            {"field": "club", "type": "nominal", "title": "Club"},
+                            {"field": "pays", "type": "nominal", "title": "Pays"},
+                            {"field": "fondation", "type": "quantitative", "title": "Fondation"}
+                        ]
+                    }
+                },
+                {
+                    "mark": {
+                        "type": "text",
+                        "fontSize": 14,
+                        "fontWeight": "bold",
+                        "dy": 80
+                    },
+                    "encoding": {
+                        "x": {
+                            "field": "x",
+                            "type": "quantitative",
+                            "axis": null
+                        },
+                        "y": {"value": 100},
+                        "text": {"field": "club", "type": "nominal"},
+                        "color": {"value": "#1e293b"}
+                    }
+                }
+            ]
+        };
 
-console.log("✅ Toutes les visualisations sont chargées!");
-</script>
+        // Embed toutes les visualisations
+        vegaEmbed('#rawgraphsChart', rawgraphsSpec, embedOptions);
+        vegaEmbed('#lexicalChart', lexicalSpec, embedOptions);
+        vegaEmbed('#imageGallery', imageSpec, embedOptions);
+
+        console.log("✅ Toutes les visualisations sont chargées!");
+    </script>
 </body>
 </html>
