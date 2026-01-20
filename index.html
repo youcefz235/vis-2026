@@ -1,133 +1,297 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8">
-<title>Football Analytics Dashboard | VIS 2026</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Football Analytics Dashboard | VIS 2026</title>
+    <script src="https://cdn.jsdelivr.net/npm/vega@5"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega-lite@5"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega-embed@6"></script>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/d3-cloud@1.2.5/build/d3.layout.cloud.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-<!-- Librairies -->
-<script src="https://cdn.jsdelivr.net/npm/vega@5"></script>
-<script src="https://cdn.jsdelivr.net/npm/vega-lite@5"></script>
-<script src="https://cdn.jsdelivr.net/npm/vega-embed@6"></script>
-<script src="https://d3js.org/d3.v7.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/d3-cloud@1.2.5/build/d3.layout.cloud.js"></script>
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: #fff;
+            min-height: 100vh;
+            padding: 20px;
+        }
 
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
 
-<style>
-body{
-    font-family:Inter,sans-serif;
-    background:linear-gradient(135deg,#0f172a,#1e293b);
-    color:white;
-    padding:20px;
-}
-.container{max-width:1500px;margin:auto}
-header{text-align:center;margin-bottom:40px}
-h1{
-    font-size:3rem;
-    background:linear-gradient(135deg,#60a5fa,#a78bfa);
-    -webkit-background-clip:text;
-    color:transparent;
-}
-.subtitle{color:#94a3b8}
+        header {
+            text-align: center;
+            padding: 40px 20px 60px;
+            margin-bottom: 40px;
+        }
 
-.dashboard-grid{
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:25px;
-}
+        h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #60a5fa 0%, #a78bfa 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 15px;
+            letter-spacing: -1px;
+        }
 
-.card{
-    background:rgba(255,255,255,.05);
-    border-radius:15px;
-    padding:25px;
-    border:1px solid rgba(255,255,255,.1);
-}
+        .subtitle {
+            font-size: 1.2rem;
+            color: #94a3b8;
+            font-weight: 300;
+        }
 
-.full-width{grid-column:1/-1}
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
 
-.viz-container{
-    background:white;
-    border-radius:10px;
-    padding:15px;
-    min-height:500px;
-}
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 35px;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+        }
 
-#wordcloud{width:100%;height:500px}
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 48px rgba(96, 165, 250, 0.15);
+            border-color: rgba(96, 165, 250, 0.3);
+        }
 
-.tooltip{
-    position:absolute;
-    background:black;
-    color:white;
-    padding:8px;
-    border-radius:5px;
-    opacity:0;
-    pointer-events:none;
-}
-</style>
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+
+        .card-icon {
+            font-size: 1.8rem;
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #fbbf24;
+        }
+
+        .viz-container {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            min-height: 550px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        .full-width {
+            grid-column: 1 / -1;
+        }
+
+        #wordcloud, #lexicalAnalysis {
+            width: 100%;
+            height: 500px;
+        }
+
+        .tooltip {
+            position: absolute;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            border-radius: 5px;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 14px;
+            z-index: 1000;
+        }
+
+        footer {
+            text-align: center;
+            padding: 50px 20px;
+            color: #64748b;
+            font-size: 0.95rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            margin-top: 40px;
+        }
+
+        @media (max-width: 1200px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .card {
+                padding: 20px;
+            }
+
+            .viz-container {
+                padding: 15px;
+                min-height: 400px;
+            }
+        }
+    </style>
 </head>
-
 <body>
-<div class="container">
+    <div class="container">
+        <header>
+            <h1>⚽ Football Analytics Dashboard</h1>
+            <p class="subtitle">Visualisation Interactive des Données Footballistiques - VIS 2026</p>
+        </header>
 
-<header>
-    <h1>⚽ Football Analytics Dashboard</h1>
-    <p class="subtitle">Visualisation interactive – VIS 2026</p>
-</header>
+        <div class="dashboard-grid">
+            <!-- Card 1: RAWGraphs Style Bar Chart -->
+            <div class="card full-width">
+                <div class="card-header">
+                    <span class="card-icon">📊</span>
+                    <h2 class="card-title">Distribution des Joueurs par Club (Style RAWGraphs)</h2>
+                </div>
+                <div class="viz-container" id="rawgraphsChart"></div>
+            </div>
 
-<div class="dashboard-grid">
+            <!-- Card 2: Advanced Word Cloud -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-icon">☁️</span>
+                    <h2 class="card-title">Nuage de Mots - Univers Football</h2>
+                </div>
+                <div class="viz-container">
+                    <svg id="wordcloud"></svg>
+                    <div class="tooltip" id="tooltip1"></div>
+                </div>
+            </div>
 
-<!-- RAWGraphs chart (inchangé) -->
-<div class="card full-width">
-    <h2>📊 Distribution des joueurs par club</h2>
-    <div class="viz-container" id="rawgraphsChart"></div>
-</div>
+            <!-- Card 3: Lexical Analysis -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-icon">📈</span>
+                    <h2 class="card-title">Analyse Lexicale Avancée</h2>
+                </div>
+                <div class="viz-container" id="lexicalChart"></div>
+            </div>
+        </div>
 
-<!-- Word Cloud -->
-<div class="card">
-    <h2>☁️ Nuage de mots interactif</h2>
-    <div class="viz-container">
-        <svg id="wordcloud"></svg>
-        <div class="tooltip" id="tooltip1"></div>
+        <footer>
+            <p>⚽ Football Analytics Dashboard © 2026 | Visualisation de données avec Vega-Lite et D3.js</p>
+            <p style="margin-top: 10px; font-size: 0.85rem;">Données provenant de sources multiples (Wikidata, RAWGraphs, Analyse Textuelle)</p>
+        </footer>
     </div>
-</div>
 
-<!-- Champ lexical -->
-<div class="card">
-    <h2>📈 Champ lexical du football</h2>
-    <div class="viz-container" id="lexicalChart"></div>
-</div>
+    <script>
+        // ===== 1. RAWGRAPHS STYLE BAR CHART =====
+        const rawgraphsSpec = {
+            "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+            "width": 1400,
+            "height": 450,
+            "data": {
+                "values": [
+                    {"club": "AC Milan", "joueurs": 1200, "categorie": "Elite"},
+                    {"club": "Ajax", "joueurs": 2100, "categorie": "Elite"},
+                    {"club": "Arsenal", "joueurs": 1100, "categorie": "Top"},
+                    {"club": "Atlético Madrid", "joueurs": 1050, "categorie": "Top"},
+                    {"club": "Barcelona", "joueurs": 1350, "categorie": "Elite"},
+                    {"club": "Bayern Munich", "joueurs": 1150, "categorie": "Elite"},
+                    {"club": "Benfica", "joueurs": 1300, "categorie": "Elite"},
+                    {"club": "Borussia Dortmund", "joueurs": 1200, "categorie": "Top"},
+                    {"club": "Chelsea", "joueurs": 1100, "categorie": "Top"},
+                    {"club": "Inter Milan", "joueurs": 1050, "categorie": "Top"},
+                    {"club": "Juventus", "joueurs": 1400, "categorie": "Elite"},
+                    {"club": "Liverpool", "joueurs": 1250, "categorie": "Elite"},
+                    {"club": "Manchester City", "joueurs": 1050, "categorie": "Top"},
+                    {"club": "Manchester United", "joueurs": 1100, "categorie": "Top"},
+                    {"club": "Paris SG", "joueurs": 1000, "categorie": "Special"},
+                    {"club": "Real Madrid", "joueurs": 2050, "categorie": "Elite"},
+                    {"club": "Roma", "joueurs": 1050, "categorie": "Top"},
+                    {"club": "Sevilla", "joueurs": 1200, "categorie": "Elite"},
+                    {"club": "Sporting", "joueurs": 1300, "categorie": "Elite"},
+                    {"club": "Tottenham", "joueurs": 1050, "categorie": "Top"},
+                    {"club": "Valencia", "joueurs": 1250, "categorie": "Elite"},
+                    {"club": "Napoli", "joueurs": 1100, "categorie": "Top"},
+                    {"club": "Porto", "joueurs": 1300, "categorie": "Elite"},
+                    {"club": "Lyon", "joueurs": 1150, "categorie": "Elite"},
+                    {"club": "Marseille", "joueurs": 1050, "categorie": "Top"},
+                    {"club": "Monaco", "joueurs": 1000, "categorie": "Top"},
+                    {"club": "PSV", "joueurs": 1100, "categorie": "Top"},
+                    {"club": "Feyenoord", "joueurs": 1050, "categorie": "Top"},
+                    {"club": "Celtic", "joueurs": 1000, "categorie": "Top"},
+                    {"club": "Rangers", "joueurs": 1050, "categorie": "Top"}
+                ]
+            },
+            "mark": {
+                "type": "bar",
+                "cornerRadiusEnd": 3,
+                "width": {"band": 0.7}
+            },
+            "encoding": {
+                "x": {
+                    "field": "club",
+                    "type": "nominal",
+                    "sort": null,
+                    "axis": {
+                        "labelAngle": -45,
+                        "labelFontSize": 10,
+                        "title": null
+                    }
+                },
+                "y": {
+                    "field": "joueurs",
+                    "type": "quantitative",
+                    "title": "Nombre de joueurs",
+                    "axis": {
+                        "grid": true,
+                        "gridOpacity": 0.3
+                    },
+                    "scale": {"domain": [0, 2500]}
+                },
+                "color": {
+                    "field": "categorie",
+                    "type": "nominal",
+                    "scale": {
+                        "domain": ["Elite", "Top", "Special"],
+                        "range": ["#ff8c42", "#4ade80", "#3b82f6"]
+                    },
+                    "legend": {
+                        "title": "Catégorie",
+                        "orient": "top-right"
+                    }
+                },
+                "tooltip": [
+                    {"field": "club", "type": "nominal", "title": "Club"},
+                    {"field": "joueurs", "type": "quantitative", "title": "Joueurs"},
+                    {"field": "categorie", "type": "nominal", "title": "Catégorie"}
+                ]
+            }
+        };
 
-</div>
-</div>
-
-<script>
-/* ================= RAWGRAPHS (identique) ================= */
-
-const rawgraphsSpec = {
-"$schema":"https://vega.github.io/schema/vega-lite/v5.json",
-"width":1400,
-"height":450,
-"data":{"values":[
-{"club":"AC Milan","joueurs":1200,"categorie":"Elite"},
-{"club":"Ajax","joueurs":2100,"categorie":"Elite"},
-{"club":"Barcelona","joueurs":1350,"categorie":"Elite"},
-{"club":"Real Madrid","joueurs":2050,"categorie":"Elite"},
-{"club":"Paris SG","joueurs":1000,"categorie":"Special"}
-]},
-"mark":{"type":"bar","cornerRadiusEnd":5},
-"encoding":{
-"x":{"field":"club","type":"nominal","axis":{"labelAngle":-30}},
-"y":{"field":"joueurs","type":"quantitative","title":"Nombre de joueurs"},
-"color":{"field":"categorie","type":"nominal"},
-"tooltip":[
-{"field":"club","type":"nominal"},
-{"field":"joueurs","type":"quantitative"},
-{"field":"categorie","type":"nominal"}
-]
-}
-};
-
-vegaEmbed("#rawgraphsChart",rawgraphsSpec,{actions:false});
+        vegaEmbed('#rawgraphsChart', rawgraphsSpec, {
+            actions: { export: true, source: false, compiled: false, editor: false },
+            theme: 'latimes'
+        });
 
 /* ================= WORD CLOUD ================= */
 
