@@ -1,201 +1,218 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8">
-<title>VIS 2026 – Clubs formateurs</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🏆 VIS 2026 | Dashboard Masterclass</title>
 
-<script src="https://cdn.jsdelivr.net/npm/vega@5"></script>
-<script src="https://cdn.jsdelivr.net/npm/vega-lite@5"></script>
-<script src="https://cdn.jsdelivr.net/npm/vega-embed@6"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega@5"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega-lite@5"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega-embed@6"></script>
 
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
 
-<style>
-body{
-  margin:0;
-  font-family:'Poppins',sans-serif;
-  background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
-  color:white;
-}
-header{
-  text-align:center;
-  padding:60px 20px;
-}
-section{
-  background:rgba(255,255,255,0.05);
-  margin:40px auto;
-  padding:30px;
-  max-width:1100px;
-  border-radius:16px;
-  box-shadow:0 8px 20px rgba(0,0,0,0.4);
-}
-h2{
-  text-align:center;
-  color:#ffcc80;
-}
-.chart{
-  background:white;
-  padding:15px;
-  border-radius:12px;
-}
-footer{
-  text-align:center;
-  padding:20px;
-  color:#ccc;
-}
-</style>
+    <style>
+        :root {
+            --primary: #00d2ff;
+            --secondary: #3a7bd5;
+            --accent: #ffcc80;
+            --bg-dark: #0f172a;
+            --card-bg: rgba(255, 255, 255, 0.07);
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            font-family: 'Outfit', sans-serif;
+            background: radial-gradient(circle at top right, #1e293b, #0f172a);
+            color: #f1f5f9;
+            overflow-x: hidden;
+        }
+
+        header {
+            text-align: center;
+            padding: 80px 20px;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.5), transparent);
+        }
+
+        header h1 {
+            font-size: 3.5rem;
+            margin: 0;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 800;
+        }
+
+        header p {
+            color: #94a3b8;
+            font-size: 1.2rem;
+            max-width: 700px;
+            margin: 20px auto 0;
+        }
+
+        main {
+            max-width: 1200px;
+            margin: 0 auto 60px;
+            padding: 0 20px;
+        }
+
+        section {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            padding: 40px;
+            margin-bottom: 50px;
+            transition: transform 0.3s ease;
+        }
+
+        section:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary);
+        }
+
+        section h2 {
+            font-size: 1.8rem;
+            margin-bottom: 30px;
+            color: var(--accent);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .viz-container {
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 25px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 400px;
+            width: 100%;
+        }
+
+        footer {
+            text-align: center;
+            padding: 40px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            color: #64748b;
+        }
+
+        footer b { color: var(--accent); }
+
+        /* Scrollbar stylée */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--bg-dark); }
+        ::-webkit-scrollbar-thumb { background: var(--secondary); border-radius: 10px; }
+    </style>
 </head>
-
 <body>
 
 <header>
-  <h1>Clubs formateurs de football</h1>
-  <p>
-    Mise à jour du projet VIS 2026 avec des visualisations interactives de données,
-    de textes et d’images.
-  </p>
+    <h1>Analytics Football VIS</h1>
+    <p>Exploration interactive des données Wikidata, analyse textuelle sémantique et visualisation d'actifs visuels.</p>
 </header>
 
-<!-- 1. VISUALISATION PRINCIPALE -->
-<section>
-  <h2>📊 Visualisation interactive des clubs (Vega-Lite)</h2>
-  <div id="chart" class="chart"></div>
-</section>
+<main>
 
-<!-- 2. VISUALISATION INTERACTIVE DE TEXTES -->
-<section>
-  <h2>📝 Visualisation interactive de textes</h2>
-  <p style="text-align:center;">
-    Exemple de fréquence de mots liés au football.
-  </p>
-  <div id="textChart" class="chart"></div>
-</section>
+    <section>
+        <h2>📊 Top Clubs Formateurs (Live Wikidata)</h2>
+        <div class="viz-container" id="wikidataChart"></div>
+    </section>
 
-<!-- 3. VISUALISATION INTERACTIVE D’IMAGES -->
-<section>
-  <h2>🖼 Visualisation interactive d’images</h2>
-  <p style="text-align:center;">
-    Logos de clubs utilisés comme données visuelles interactives.
-  </p>
-  <div id="imageChart" class="chart"></div>
-</section>
+    <section>
+        <h2>☁️ Nuage de mots interactif</h2>
+        <div class="viz-container" id="wordCloudChart"></div>
+    </section>
+
+    <section>
+        <h2>🖼 Visualisation interactive d'images</h2>
+        <div class="viz-container" id="imageChart"></div>
+    </section>
+
+</main>
 
 <footer>
-  Projet VIS 2026 – Data Visualization & Wikidata
+    Conçu pour le module <b>VIS 2026</b> — Data Visualization & Web Technologies
 </footer>
 
 <script>
-// =====================================================
-// 1. Graphique principal (Wikidata)
-// =====================================================
-const spec = {
-  "$schema":"https://vega.github.io/schema/vega-lite/v5.json",
-  "data":{
-    "url":"https://query.wikidata.org/sparql?query=SELECT%20%3FclubLabel%20%3FcountryLabel%20(COUNT(DISTINCT%20%3Fplayer)%20AS%20%3FplayersCount)%20WHERE%20%7B%20%3Fplayer%20wdt%3AP106%20wd%3AQ937857%3B%20wdt%3AP54%20%3Fclub.%20%3Fclub%20wdt%3AP31%20wd%3AQ476028%3B%20wdt%3AP17%20%3Fcountry.%20SERVICE%20wikibase%3Alabel%20%7B%20bd%3AserviceParam%20wikibase%3Alanguage%20%22fr%22.%20%7D%20%7D%20GROUP%20BY%20%3FclubLabel%20%3FcountryLabel%20ORDER%20BY%20DESC(%3FplayersCount)%20LIMIT%2010",
-    "format":{"type":"json","property":"results.bindings"}
-  },
-  "transform":[
-    {"calculate":"toNumber(datum.playersCount.value)","as":"players"}
-  ],
-  "mark":"bar",
-  "encoding":{
-    "x":{
-      "field":"clubLabel.value",
-      "type":"nominal",
-      "sort":"-y",
-      "axis":{"labelAngle":-30},
-      "title":"Club"
-    },
-    "y":{
-      "field":"players",
-      "type":"quantitative",
-      "title":"Nombre de joueurs formés"
-    },
-    "color":{
-      "field":"countryLabel.value",
-      "type":"nominal",
-      "title":"Pays"
-    },
-    "tooltip":[
-      {"field":"clubLabel.value","type":"nominal","title":"Club"},
-      {"field":"countryLabel.value","type":"nominal","title":"Pays"},
-      {"field":"players","type":"quantitative","title":"Joueurs"}
-    ]
-  }
-};
+    // --- CONFIGURATION VEGA-LITE ---
 
-vegaEmbed("#chart", spec, {actions:false});
+    // 1. DATA VIZ (Barres)
+    const wikidataSpec = {
+        "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+        "width": 800, "height": 350,
+        "data": {
+            "url": "https://query.wikidata.org/sparql?query=SELECT%20%3FclubLabel%20%3FcountryLabel%20(COUNT(DISTINCT%20%3Fplayer)%20AS%20%3FplayersCount)%20WHERE%20%7B%20%3Fplayer%20wdt%3AP106%20wd%3AQ937857%3B%20wdt%3AP54%20%3Fclub.%20%3Fclub%20wdt%3AP31%20wd%3AQ476028%3B%20wdt%3AP17%20%3Fcountry.%20SERVICE%20wikibase%3Alabel%20%7B%20bd%3AserviceParam%20wikibase%3Alanguage%20%22fr%22.%20%7D%20%7D%20GROUP%20BY%20%3FclubLabel%20%3FcountryLabel%20ORDER%20BY%20DESC(%3FplayersCount)%20LIMIT%2015",
+            "format": { "type": "json", "property": "results.bindings" }
+        },
+        "transform": [{ "calculate": "toNumber(datum.playersCount.value)", "as": "Nombre" }],
+        "mark": { "type": "bar", "cornerRadiusEnd": 8, "color": "#3a7bd5" },
+        "encoding": {
+            "x": { "field": "clubLabel.value", "type": "nominal", "sort": "-y", "title": "Club", "axis": {"labelAngle": -30} },
+            "y": { "field": "Nombre", "type": "quantitative" },
+            "tooltip": [
+                {"field": "clubLabel.value", "title": "Club"},
+                {"field": "countryLabel.value", "title": "Pays"},
+                {"field": "Nombre", "title": "Joueurs formés"}
+            ]
+        }
+    };
 
-// =====================================================
-// 2. Visualisation interactive de textes
-// =====================================================
-const textSpec = {
-  "$schema":"https://vega.github.io/schema/vega-lite/v5.json",
-  "data":{
-    "values":[
-      {"mot":"Football","freq":40},
-      {"mot":"Club","freq":32},
-      {"mot":"Formation","freq":25},
-      {"mot":"Joueur","freq":37},
-      {"mot":"Données","freq":20}
-    ]
-  },
-  "mark":"bar",
-  "encoding":{
-    "x":{"field":"mot","type":"nominal","title":"Mot"},
-    "y":{"field":"freq","type":"quantitative","title":"Fréquence"},
-    "tooltip":[
-      {"field":"mot","type":"nominal","title":"Mot"},
-      {"field":"freq","type":"quantitative","title":"Fréquence"}
-    ]
-  }
-};
+    // 2. NUAGE DE MOTS (Word Cloud)
+    const wordCloudSpec = {
+        "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+        "width": 800, "height": 400,
+        "data": {
+            "values": [
+                {"text": "Football", "count": 100}, {"text": "Data", "count": 80},
+                {"text": "Wikidata", "count": 95}, {"text": "Club", "count": 70},
+                {"text": "Formation", "count": 60}, {"text": "Joueur", "count": 85},
+                {"text": "Transfert", "count": 40}, {"text": "Tactique", "count": 35},
+                {"text": "Match", "count": 50}, {"text": "But", "count": 45},
+                {"text": "Stade", "count": 30}, {"text": "FIFA", "count": 55},
+                {"text": "Ballon", "count": 25}, {"text": "Ligue", "count": 65},
+                {"text": "Performance", "count": 48}, {"text": "Analyse", "count": 75}
+            ]
+        },
+        "mark": {"type": "text", "baseline": "middle"},
+        "encoding": {
+            "text": {"field": "text", "type": "nominal"},
+            "size": {"field": "count", "type": "quantitative", "scale": {"range": [15, 80]}},
+            "color": {"field": "count", "type": "quantitative", "scale": {"scheme": "viridis"}},
+            "x": {"aggregate": "mean", "field": "count", "type": "quantitative", "axis": null},
+            "y": {"aggregate": "mean", "field": "count", "type": "quantitative", "axis": null},
+            "tooltip": [{"field": "text", "title": "Mot"}, {"field": "count", "title": "Importance"}]
+        }
+    };
 
-vegaEmbed("#textChart", textSpec, {actions:false});
+    // 3. IMAGE VIZ (Logos)
+    const imageSpec = {
+        "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+        "width": 800, "height": 300,
+        "data": {
+            "values": [
+                { "name": "Ajax Amsterdam", "url": "https://upload.wikimedia.org/wikipedia/en/7/79/Ajax_Amsterdam.svg" },
+                { "name": "Benfica Lisbonne", "url": "https://upload.wikimedia.org/wikipedia/en/a/a2/SL_Benfica_logo.svg" },
+                { "name": "FC Barcelone", "url": "https://upload.wikimedia.org/wikipedia/fr/thumb/a/a1/FC_Barcelona_logo.svg/512px-FC_Barcelona_logo.svg.png" },
+                { "name": "Real Madrid", "url": "https://upload.wikimedia.org/wikipedia/fr/thumb/c/c7/Logo_Real_Madrid.svg/512px-Logo_Real_Madrid.svg.png" }
+            ]
+        },
+        "mark": { "type": "image", "width": 100, "height": 100 },
+        "encoding": {
+            "x": { "field": "name", "type": "nominal", "title": "Clubs sélectionnés" },
+            "url": { "field": "url", "type": "nominal" },
+            "tooltip": [{"field": "name", "title": "Club"}]
+        }
+    };
 
-// =====================================================
-// 3. Visualisation interactive d’images
-// =====================================================
-const imageSpec = {
-  "$schema":"https://vega.github.io/schema/vega-lite/v5.json",
-  "data":{
-    "values":[
-      {
-        "club":"FC Barcelone",
-        "img":"https://upload.wikimedia.org/wikipedia/fr/a/a1/FC_Barcelona_logo.svg"
-      },
-      {
-        "club":"Ajax",
-        "img":"https://upload.wikimedia.org/wikipedia/en/7/79/Ajax_Amsterdam.svg"
-      },
-      {
-        "club":"Benfica",
-        "img":"https://upload.wikimedia.org/wikipedia/en/a/a2/SL_Benfica_logo.svg"
-      }
-    ]
-  },
-  "mark":{
-    "type":"image",
-    "width":80,
-    "height":80
-  },
-  "encoding":{
-    "x":{
-      "field":"club",
-      "type":"nominal",
-      "title":"Clubs"
-    },
-    "url":{
-      "field":"img",
-      "type":"nominal"
-    },
-    "tooltip":[
-      {"field":"club","type":"nominal","title":"Club"}
-    ]
-  }
-};
-
-vegaEmbed("#imageChart", imageSpec, {actions:false});
+    // Rendu final
+    vegaEmbed("#wikidataChart", wikidataSpec, {actions: false});
+    vegaEmbed("#wordCloudChart", wordCloudSpec, {actions: false});
+    vegaEmbed("#imageChart", imageSpec, {actions: false});
 </script>
 
 </body>
